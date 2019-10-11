@@ -1,0 +1,62 @@
+---
+title: "10-import"
+output: html_notebook
+---
+I'd like this to replace my score for the coding section of assignment 3.
+## Needed libraries
+
+```{r import_libraries}
+library(tidyverse)
+library(readr)
+library(assertr)
+library(lubridate)
+library(janitor)
+```
+
+## Import Data and clean names
+
+```{r import_data}
+Mass_Shooting_Data_2016_2016 <- read_csv("Mass Shooting Data 2016 - 2016.csv") %>%
+  clean_names()
+```
+
+## Check columns for NA values
+
+We want to check all of the columns to if there are any NA values present. 
+
+```{r col_na}
+for(col_name in names(Mass_Shooting_Data_2016_2016)) {
+  Mass_Shooting_Data_2016_2016 %>% 
+    assert(not_na, col_name)
+}
+```
+
+Using the assert are command not_na we find that there are no NAs in any of the columns. 
+
+## Check killed column for negative values
+
+We want to make sure there are no negative values in the killed column of this data set since it is not possible to kill negative people. 
+```{r neg_killed}
+Mass_Shooting_Data_2016_2016 <- read_csv("Mass Shooting Data 2016 - 2016.csv") %>%
+  assert(within_bounds(0,Inf), killed)
+```
+We checked within the bounds from 0 to infinity and it showed us that all of the values in the killed column of the data were either 0 or positive. 
+## Check wounded column for negative values
+
+We want to do the same assertr command we used for the killing column on the wounded column.
+```{r neg_wounded}
+Mass_Shooting_Data_2016_2016 <- read_csv("Mass Shooting Data 2016 - 2016.csv") %>%
+  assert(within_bounds(0,Inf), wounded)
+```
+Using the same bounds we find that all values in the wounded column are either 0 or positive. 
+
+## Editing variable type for date
+
+The date variable is currently a character, but we want to make it a date. We also want it to be formatted in year-month-day format. 
+
+```{r date_format}
+Mass_Shooting_Data_2016_2016 <- Mass_Shooting_Data_2016_2016 %>%
+  mutate(date = mdy(date))
+```
+
+ 
