@@ -1,0 +1,62 @@
+---
+title: "20-explore"
+output: html_notebook
+---
+## Create variable for month
+
+```{r month_create}
+Mass_Shooting_Data_2016_2016 <- Mass_Shooting_Data_2016_2016 %>%
+  mutate(month = month(date)) %>%
+  select(date, month, everything())
+```
+
+## Mean number of people killed by month
+
+```{r mean_killed_month}
+Mass_Shooting_Data_2016_2016 <- Mass_Shooting_Data_2016_2016 %>%
+  group_by(month) %>%
+  mutate(mean_killed_month = mean(killed, na.rm = TRUE)) %>%
+  ungroup(month) %>%
+  select(date, month, everything())
+```
+
+## Total number of people killed by month
+
+```{r total_killed_month}
+Mass_Shooting_Data_2016_2016 <- Mass_Shooting_Data_2016_2016 %>%
+  group_by(month) %>%
+  mutate(total_killed_month = sum(killed, na.rm = TRUE)) %>%
+  ungroup(month) %>%
+  select(date, month, everything())
+```
+
+## Total number of people wounded or killed per month
+
+```{r total_injured_month}
+Mass_Shooting_Data_2016_2016 <- Mass_Shooting_Data_2016_2016 %>%
+  group_by(month) %>%
+  mutate(total_injured_month = sum(killed, na.rm = TRUE) + sum(wounded, na.rm = TRUE)) %>%
+  ungroup(month) %>%
+  select(date, month, everything())
+```
+
+## Total number of people wounded or killed per city
+
+```{r city_total_injured}
+Mass_Shooting_Data_2016_2016 <- Mass_Shooting_Data_2016_2016 %>%
+  group_by(city) %>%
+  mutate(city_total_injured = sum(killed, na.rm = TRUE) + sum(wounded, na.rm = TRUE)) %>%
+  ungroup(city) %>%
+  select(date, month, everything())
+```
+
+## Number of events per city
+
+```{r city_events}
+Mass_Shooting_Data_2016_2016 <- Mass_Shooting_Data_2016_2016 %>%
+  group_by(city) %>%
+  mutate(city_events = n())  %>%
+  ungroup(city) %>%
+  select(date, month, everything())
+```
+

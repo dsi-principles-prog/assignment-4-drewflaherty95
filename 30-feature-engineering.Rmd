@@ -1,0 +1,78 @@
+---
+title: "30-feature-engineering"
+output: html_notebook
+---
+## Mean number of people killed and wounded by state per shooting
+
+I want to observe the mean number of people killed and wounded per shooting in each state to see if any one state is significantly higher than another. This could potentially be skewed if there was a large mass shooting in one state that raises the mean. 
+```{r mean_by_state}
+scale1 <- function(x, na.rm = TRUE)(mean(x, na.rm = na.rm))
+
+mean_by_state <- function(df, vars) {
+  df %>%
+    group_by(state) %>%
+    mutate_at(vars, list(mean_state = scale1)) %>%
+    ungroup() %>%
+    select(state, contains("_state"), everything()) %>%
+    arrange(state)
+}
+
+Mass_Shooting_Data_2016_2016 %>%
+  mean_by_state(c("killed", "wounded"))
+```
+
+## Standardized number of people killed by state
+
+This will show us how far away from the mean each shooting was in terms of both people killed and wounded. I think this will help identify outliers and solve the problem mentioned in the code above. 
+
+```{r calc_by_state}
+scale2 <- function(x, na.rm = TRUE)(x - mean(x, na.rm = na.rm)) / sd(x, na.rm = na.rm)
+
+calc_by_state <- function(df, vars) {
+  df %>%
+    group_by(state) %>%
+    mutate_at(vars, list(std_state = scale2)) %>%
+    ungroup() %>%
+    select(state, contains("_state"), everything()) %>%
+    arrange(state)
+}
+
+Mass_Shooting_Data_2016_2016 %>%
+  calc_by_state(c("killed", "wounded"))
+```
+
+## Mean number of people killed and wounded by month
+
+I want to see if any month(s) are more likely to have shootings in them and I think the number of people killed and wounded by shootings in a particular month is a good indicator of that. 
+
+```{r mean_by_month}
+mean_by_month <- function(df, vars) {
+  df %>%
+    group_by(month) %>%
+    mutate_at(vars, list(mean_month = scale1)) %>%
+    ungroup() %>%
+    select(month, contains("_month"), everything()) %>%
+    arrange(month)
+}
+
+Mass_Shooting_Data_2016_2016 %>%
+  mean_by_month(c("killed", "wounded"))
+```
+
+## Mean number of people killed and wounded by city
+
+I wanted to see the mean number of people killed or wounded by city. I think this will help identify more dangerous cities. 
+
+```{r calc_by_month}
+mean_by_city <- function(df, vars) {
+  df %>%
+    group_by(city) %>%
+    mutate_at(vars, list(mean_city = scale1)) %>%
+    ungroup() %>%
+    select(city, contains("_city"), everything()) %>%
+    arrange(city)
+}
+
+Mass_Shooting_Data_2016_2016 %>%
+  mean_by_city(c("killed", "wounded"))
+```

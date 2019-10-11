@@ -3,6 +3,11 @@ title: "assign4"
 output: html_notebook
 ---
 
+```{r}
+library(tidyverse)
+library(lubridate)
+library(RVerbalExpressions)
+```
 
 For the regular expression exercises, try writing first using regular expressions directly, then try using rverbalexpressions. Provide the code for both. 
 
@@ -12,13 +17,55 @@ For the regular expression exercises, try writing first using regular expression
 
 Create a vector of dates giving the first day of every month in the current year. 
 
+```{r}
+first_month <- (floor_date(unit = "year", today()) + month(0:11))
+```
+
+
 Write a function that given your birthday (as a date), returns how old you are in years.
+```{r}
+age <- function(date) {
+ time_length(difftime(today(), ymd(date)), "years")
+}
+
+age(19951128)
+```
+
 
 Write a function that given your birthday, returns the day of the week you were born on. 
+
+```{r}
+day_of_week <- function(day){
+  wday(day, label = TRUE)
+}
+
+day_of_week(ymd(19951128))
+```
+
 
 ## R4DS 14.3.2.1
 
 Given the corpus of common words in stringr::words, create regular expressions that find all words that have seven letters or more. (Since this list is long, you might want to use the match argument to str_view() to show only the matching or non-matching words.)
+
+```{r}
+stringr::words
+words
+
+## Regular Expression
+
+str_view(words, ".{7,}", match = TRUE)
+
+## Verbal Expression
+
+seven_letters <- rx() %>%
+  rx_word_char() %>%
+  rx_repeat_previous(7) %>%
+  rx_anything() %>%
+  print()
+
+str_view(words, seven_letters, match = TRUE)
+```
+
 
 ## R4DS 14.3.3.1
 
@@ -26,9 +73,67 @@ Use str_detect to find all words that:
 
 That only contain consonants. (Hint: thinking about matching “not”-vowels.)
 
+```{r}
+str_subset(words, "^[^aeiou]+$")
+
+consonants <- rx() %>%
+  rx_start_of_line() %>%
+  rx_anything_but("aeiou") %>%
+  rx_end_of_line()
+  
+str_subset(words, consonants)
+```
+
+
 Empirically verify the rule “i before e except after c”.
 
+```{r}
+x <- str_subset(words, "([^c]ie|cei)")
+length(x)
+
+after_c <- rx() %>%
+  rx_find("c") %>%
+  rx_anything_but("ie") %>%
+  rx_find("ei")
+
+i_before_e <- rx() %>%
+  rx_something_but("c") %>%
+  rx_find("ie")
+  
+  
+after_c_vec <- str_subset(words, after_c)
+i_before_e_vec <- str_subset(words, i_before_e)
+length(after_c_vec) + length(i_before_e_vec)
+```
+
+
 Create a regular expression that will match telephone numbers as commonly written in the US. Split this up into multiple expressions as needed.
+
+```{r}
+y <- c("123-456-7890", "123.456.7890", "1234567890", "(123)456-7890", "1234", "12-345-9")
+
+## Regular Expression
+
+str_view(y, "([0-9]{3}-[0-9]{3}-[0-9]{4}|[0-9]{3}.[0-9]{3}.[0-9]{4}|[0-9]{10}|([0-9]{3})[0-9]{3}-[0-9]{4})")
+
+## Verbal Expression
+
+telrx <- rx() %>%
+  rx_start_of_line() %>%
+  rx_digit() %>%
+  rx_repeat_previous(3) %>%
+  rx_any_of("-.") %>%
+  rx_digit() %>%
+  rx_repeat_previous(3) %>%
+  rx_any_of("-.") %>%
+  rx_digit() %>%
+  rx_repeat_previous(4) %>% 
+  rx_end_of_line() %>%
+  print() %>%
+  grepl(c("217-377-2867", "217.377.2867", "EM7.377.2867")) %>%
+  print()
+```
+
 
 # Part 2
 
