@@ -3,6 +3,12 @@ title: "10-import"
 output: html_notebook
 ---
 I'd like this to replace my score for the coding section of assignment 3.
+
+## Problem 
+
+This dataset contains observations of shootings in the US for 2016. It contains values for the number of people killed and wounded per shooting. It also contains data on the date and location of the shooting. 
+
+I want to know what time of year has the highest amount of mass shootings. It is believed that the summer is when shootings are most likely to occur. I also want to see which states and cities have the highest number of people injured (killed and wounded) from mass shootings. 
 ## Needed libraries
 
 ```{r import_libraries}
